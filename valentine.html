@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Will You Be My Galentine?</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #ffe4e1;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            text-align: center;
+        }
+        .container {
+            background-color: white;
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        h1 { color: #d63384; }
+        .buttons { margin-top: 30px; position: relative; }
+        button {
+            padding: 10px 20px;
+            font-size: 18px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            margin: 10px;
+        }
+        #yesBtn { background-color: #ff69b4; color: white; }
+        #noBtn { background-color: #ccc; color: white; position: absolute; }
+        #message { display: none; margin-top: 20px; font-size: 24px; color: #d63384; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Will you be my Galentine? 👯‍♀️</h1>
+        <div class="buttons">
+            <button id="yesBtn" onclick="celebrate()">Yes!</button>
+            <button id="noBtn" onmouseover="moveButton()">No</button>
+        </div>
+        <div id="message">Yay! Best Galentine ever! ❤️🎉</div>
+    </div>
+
+    <script>
+        function moveButton() {
+            var x = Math.random() * (window.innerWidth - 100);
+            var y = Math.random() * (window.innerHeight - 100);
+            document.getElementById('noBtn').style.left = x + 'px';
+            document.getElementById('noBtn').style.top = y + 'px';
+        }
+
+        function celebrate() {
+            document.getElementById('yesBtn').style.display = 'none';
+            document.getElementById('noBtn').style.display = 'none';
+            document.querySelector('h1').style.display = 'none';
+            document.getElementById('message').style.display = 'block';
+            // You can add confetti code here!
+        }
+    </script>
+</body>
+</html>
