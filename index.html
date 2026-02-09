@@ -87,16 +87,22 @@
         #noBtn { 
             background-color: #ccc; 
             color: white; 
-            position: fixed;
+            position: absolute;
             transition: all 0.2s ease-out;
             z-index: 2;
         }
         #message { 
             display: none; 
             margin-top: 20px; 
-            font-size: 24px; 
+            font-size: 20px; 
             color: #d63384;
             animation: celebrate 1s ease-in-out;
+        }
+        .event-details {
+            margin-top: 20px;
+            font-size: 16px;
+            color: #555;
+            line-height: 1.6;
         }
         @keyframes celebrate {
             0% { transform: scale(0); opacity: 0; }
@@ -113,7 +119,15 @@
             <button id="yesBtn" onclick="celebrate()">Yes!</button>
             <button id="noBtn">No</button>
         </div>
-        <div id="message">Yay! Best Galentine ever! ❤️🎉</div>
+        <div id="message">
+            <div>Yay! Best Galentine ever! ❤️🎉</div>
+            <div class="event-details">
+                <p><strong>📅 When:</strong> Friday, February 14th at 7:00 PM</p>
+                <p><strong>📍 Where:</strong> My place!</p>
+                <p><strong>🎬 What:</strong> Rom-coms, snacks, and good vibes</p>
+                <p><strong>💕 Dress code:</strong> Comfy and cute!</p>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -147,20 +161,8 @@
         // No button dodges cursor
         const noBtn = document.getElementById('noBtn');
         const yesBtn = document.getElementById('yesBtn');
-        let yesBtnSize = 18;
         
-        // Initialize no button position next to yes button
-        function initializeNoButton() {
-            const yesRect = yesBtn.getBoundingClientRect();
-            noBtn.style.left = (yesRect.right + 30) + 'px';
-            noBtn.style.top = yesRect.top + 'px';
-        }
-        
-        // Wait for page to load, then position button
-        window.addEventListener('load', initializeNoButton);
-        window.addEventListener('resize', initializeNoButton);
-        
-        // Make no button dodge cursor slightly
+        // Make no button dodge cursor
         document.addEventListener('mousemove', (e) => {
             const noBtnRect = noBtn.getBoundingClientRect();
             const noBtnCenterX = noBtnRect.left + noBtnRect.width / 2;
@@ -170,10 +172,10 @@
             const distanceY = noBtnCenterY - e.clientY;
             const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
             
-            // If cursor gets within 100px, nudge the button
+            // If cursor gets within 100px, move the button away
             if (distance < 100) {
                 const angle = Math.atan2(distanceY, distanceX);
-                const dodgeDistance = 80; // Dodge distance
+                const dodgeDistance = 80;
                 
                 let newX = noBtnCenterX + Math.cos(angle) * dodgeDistance;
                 let newY = noBtnCenterY + Math.sin(angle) * dodgeDistance;
@@ -183,19 +185,10 @@
                 newX = Math.max(margin, Math.min(window.innerWidth - margin, newX));
                 newY = Math.max(margin, Math.min(window.innerHeight - margin, newY));
                 
-                noBtn.style.left = newX + 'px';
-                noBtn.style.top = newY + 'px';
+                noBtn.style.left = (newX - noBtnRect.width / 2) + 'px';
+                noBtn.style.top = (newY - noBtnRect.height / 2) + 'px';
             }
         });
-        
-        // Make yes button grow every 2 seconds
-        setInterval(() => {
-            if (yesBtn.style.display !== 'none') {
-                yesBtnSize += 2;
-                yesBtn.style.fontSize = yesBtnSize + 'px';
-                yesBtn.style.padding = (10 + yesBtnSize / 4) + 'px ' + (20 + yesBtnSize / 3) + 'px';
-            }
-        }, 2000);
         
         function celebrate() {
             yesBtn.style.display = 'none';
