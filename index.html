@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Will You Be My Galentine?</title>
     <style>
+        * {
+            cursor: none !important
+        }
         body {
             display: flex;
             justify-content: center;
@@ -14,6 +17,34 @@
             font-family: 'Arial', sans-serif;
             margin: 0;
             text-align: center;
+            overflow: hidden;
+        }
+        .custom-cursor {
+            position: fixed;
+            width: 30px;
+            height: 30px;
+            pointer-events: none;
+            z-index: 10000;
+            transform: translate(-50%, 50%);
+            font-size: 30px;
+        }
+        .heart-trail {
+            position: fixed;
+            pointer-events: none;
+            font-size: 20px;
+            animation: float-up 2s ease-out forwards;
+            z-index: 9999;
+        }
+        
+        @keyframes float-up {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100px) scale(0.5);
+            }
         }
         .container {
             background-color: white;
@@ -31,35 +62,141 @@
             cursor: pointer;
             margin: 10px;
         }
-        #yesBtn { background-color: #ff69b4; color: white; }
-        #noBtn { background-color: #ccc; color: white; position: absolute; }
-        #message { display: none; margin-top: 20px; font-size: 24px; color: #d63384; }
+        #yesBtn { 
+            background-color: #ff69b4; 
+            color: white; }
+        #yesBtn:hover {
+            background-color: #ff1493;
+            transform: scale(1.05);
+        }
+        #noBtn { 
+            background-color: #ccc; 
+            color: white; 
+            position: absolute; 
+        }
+        #message { 
+            display: none; 
+            margin-top: 20px; 
+            font-size: 24px; 
+            color: #d63384; 
+        }
+        @keyframes celebrate {
+            0% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); opacity: 1; }
+        }
     </style>
 </head>
 <body>
+    <div class="custom-cursor">💖</div>
     <div class="container">
         <h1>Will you be my Galentine? 👯‍♀️</h1>
         <div class="buttons">
             <button id="yesBtn" onclick="celebrate()">Yes!</button>
-            <button id="noBtn" onmouseover="moveButton()">No</button>
+            <button id="noBtn">No</button>
         </div>
         <div id="message">Yay! Best Galentine ever! ❤️🎉</div>
     </div>
 
     <script>
-        function moveButton() {
-            var x = Math.random() * (window.innerWidth - 100);
-            var y = Math.random() * (window.innerHeight - 100);
-            document.getElementById('noBtn').style.left = x + 'px';
-            document.getElementById('noBtn').style.top = y + 'px';
+        // Custom cursor functionality
+        const cursor = document.querySelector('.custom-cursor');
+        let mouseX = 0, mouseY = 0;
+        
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            cursor.style.left = mouseX + 'px';
+            cursor.style.top = mouseY + 'px';
+            
+            // Create trailing hearts randomly
+            if (Math.random() > 0.8) {
+                createHeartTrail(mouseX, mouseY);
+            }
+        });
+        function createHeartTrail(x, y) {
+            const heart = document.createElement('div');
+            heart.className = 'heart-trail';
+            heart.textContent = '💕';
+            heart.style.left = x + 'px';
+            heart.style.top = y + 'px';
+            document.body.appendChild(heart);
+            
+            setTimeout(() => heart.remove(), 2000);
         }
-
+        
+        // No button runs away from cursor
+        const noBtn = document.getElementById('noBtn');
+        const yesBtn = document.getElementById('yesBtn');
+        let noBtnSize = 18;
+        let yesBtnSize = 18;
+        
+        // Initialize no button position
+        function initializeNoButton() {
+            const container = document.querySelector('.container');
+            const rect = container.getBoundingClientRect();
+            noBtn.style.left = (rect.right + 50) + 'px';
+            noBtn.style.top = rect.top + rect.height / 2 + 'px';
+        }
+        
+        initializeNoButton();
+        window.addEventListener('resize', initializeNoButton);
+        
+        // Make no button run away from cursor
+        document.addEventListener('mousemove', (e) => {
+            const noBtnRect = noBtn.getBoundingClientRect();
+            const noBtnCenterX = noBtnRect.left + noBtnRect.width / 2;
+            const noBtnCenterY = noBtnRect.top + noBtnRect.height / 2;
+            
+            const distanceX = noBtnCenterX - e.clientX;
+            const distanceY = noBtnCenterY - e.clientY;
+            const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+            
+            // If cursor gets within 150px, move the button away
+            if (distance < 150) {
+                const angle = Math.atan2(distanceY, distanceX);
+                const moveDistance = 150 - distance;
+                
+                let newX = noBtnCenterX + Math.cos(angle) * moveDistance;
+                let newY = noBtnCenterY + Math.sin(angle) * moveDistance;
+                
+                // Keep button within window bounds
+                const margin = 50;
+                newX = Math.max(margin, Math.min(window.innerWidth - margin, newX));
+                newY = Math.max(margin, Math.min(window.innerHeight - margin, newY));
+                
+                noBtn.style.left = newX + 'px';
+                noBtn.style.top = newY + 'px';
+                
+                // Shrink no button when chased
+                noBtnSize = Math.max(12, noBtnSize - 0.5);
+                noBtn.style.fontSize = noBtnSize + 'px';
+            }
+        });
+        
+        // Make yes button grow every 2 seconds
+        setInterval(() => {
+            if (yesBtn.style.display !== 'none') {
+                yesBtnSize += 2;
+                yesBtn.style.fontSize = yesBtnSize + 'px';
+                yesBtn.style.padding = (15 + yesBtnSize / 3) + 'px ' + (30 + yesBtnSize / 2) + 'px';
+            }
+        }, 2000);
+        
         function celebrate() {
-            document.getElementById('yesBtn').style.display = 'none';
-            document.getElementById('noBtn').style.display = 'none';
+            yesBtn.style.display = 'none';
+            noBtn.style.display = 'none';
             document.querySelector('h1').style.display = 'none';
             document.getElementById('message').style.display = 'block';
-            // You can add confetti code here!
+            
+            // Create celebration hearts
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const x = Math.random() * window.innerWidth;
+                    const y = Math.random() * window.innerHeight;
+                    createHeartTrail(x, y);
+                }, i * 50);
+            }
         }
     </script>
 </body>
