@@ -25,7 +25,7 @@
             height: 30px;
             pointer-events: none;
             z-index: 10000;
-            transform: translate(-50%, 50%);
+            transform: translate(-50%, -50%);
             font-size: 30px;
         }
         .heart-trail {
@@ -53,18 +53,25 @@
             box-shadow: 0 10px 20px rgba(0,0,0,0.1);
         }
         h1 { color: #d63384; }
-        .buttons { margin-top: 30px; position: relative; }
+        .buttons { 
+            margin-top: 30px; 
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            align-items: center;
+        }
         button {
             padding: 10px 20px;
             font-size: 18px;
             border-radius: 10px;
             border: none;
-            cursor: pointer;
+            cursor: none;
             margin: 10px;
         }
         #yesBtn { 
             background-color: #ff69b4; 
-            color: white; }
+            color: white; 
+        }
         #yesBtn:hover {
             background-color: #ff1493;
             transform: scale(1.05);
@@ -72,7 +79,8 @@
         #noBtn { 
             background-color: #ccc; 
             color: white; 
-            position: absolute; 
+            position: fixed;
+            transition: all 0.2s ease-out;
         }
         #message { 
             display: none; 
@@ -114,6 +122,7 @@
                 createHeartTrail(mouseX, mouseY);
             }
         });
+        
         function createHeartTrail(x, y) {
             const heart = document.createElement('div');
             heart.className = 'heart-trail';
@@ -125,24 +134,23 @@
             setTimeout(() => heart.remove(), 2000);
         }
         
-        // No button runs away from cursor
+        // No button dodges cursor
         const noBtn = document.getElementById('noBtn');
         const yesBtn = document.getElementById('yesBtn');
-        let noBtnSize = 18;
         let yesBtnSize = 18;
         
         // Initialize no button position
         function initializeNoButton() {
             const container = document.querySelector('.container');
             const rect = container.getBoundingClientRect();
-            noBtn.style.left = (rect.right + 50) + 'px';
-            noBtn.style.top = rect.top + rect.height / 2 + 'px';
+            noBtn.style.left = (rect.right - 80) + 'px';
+            noBtn.style.top = (rect.top + rect.height / 2 + 20) + 'px';
         }
         
         initializeNoButton();
         window.addEventListener('resize', initializeNoButton);
         
-        // Make no button run away from cursor
+        // Make no button dodge cursor slightly
         document.addEventListener('mousemove', (e) => {
             const noBtnRect = noBtn.getBoundingClientRect();
             const noBtnCenterX = noBtnRect.left + noBtnRect.width / 2;
@@ -152,25 +160,21 @@
             const distanceY = noBtnCenterY - e.clientY;
             const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
             
-            // If cursor gets within 150px, move the button away
-            if (distance < 150) {
+            // If cursor gets within 100px, nudge the button
+            if (distance < 100) {
                 const angle = Math.atan2(distanceY, distanceX);
-                const moveDistance = 150 - distance;
+                const dodgeDistance = 60; // Fixed small dodge distance
                 
-                let newX = noBtnCenterX + Math.cos(angle) * moveDistance;
-                let newY = noBtnCenterY + Math.sin(angle) * moveDistance;
+                let newX = noBtnCenterX + Math.cos(angle) * dodgeDistance;
+                let newY = noBtnCenterY + Math.sin(angle) * dodgeDistance;
                 
-                // Keep button within window bounds
-                const margin = 50;
+                // Keep button within window bounds with padding
+                const margin = 100;
                 newX = Math.max(margin, Math.min(window.innerWidth - margin, newX));
                 newY = Math.max(margin, Math.min(window.innerHeight - margin, newY));
                 
                 noBtn.style.left = newX + 'px';
                 noBtn.style.top = newY + 'px';
-                
-                // Shrink no button when chased
-                noBtnSize = Math.max(12, noBtnSize - 0.5);
-                noBtn.style.fontSize = noBtnSize + 'px';
             }
         });
         
@@ -179,7 +183,7 @@
             if (yesBtn.style.display !== 'none') {
                 yesBtnSize += 2;
                 yesBtn.style.fontSize = yesBtnSize + 'px';
-                yesBtn.style.padding = (15 + yesBtnSize / 3) + 'px ' + (30 + yesBtnSize / 2) + 'px';
+                yesBtn.style.padding = (10 + yesBtnSize / 4) + 'px ' + (20 + yesBtnSize / 3) + 'px';
             }
         }, 2000);
         
