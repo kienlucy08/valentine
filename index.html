@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Will You Be My Galentine?</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+
     <style>
         * {
             cursor: none !important
@@ -13,11 +16,18 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #ffe4e1;
-            font-family: 'Arial', sans-serif;
+            background: linear-gradient(-45deg, #ff9a9e, #fad0c4, #fbc2eb, #a18cd1);
+            background-size: 400% 400%;
+            animation: bgMove 12s ease infinite;
+            font-family: "Poppins", sans-serif;
             margin: 0;
             text-align: center;
             overflow: hidden;
+        }
+        @keyframes bgMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
         .custom-cursor {
             position: fixed;
@@ -120,15 +130,19 @@
             <button id="noBtn">No</button>
         </div>
         <div id="message">
-            <div>Yay! Best Galentine ever! ❤️🎉</div>
+            <div>Yay! ❤️🎉</div>
             <div class="event-details">
-                <p><strong>📅 When:</strong> Friday, February 14th at 7:00 PM</p>
+                <p><strong>📅 When:</strong> Friday, February 21st at 7:00 PM</p>
                 <p><strong>📍 Where:</strong> My place!</p>
-                <p><strong>🎬 What:</strong> Rom-coms, snacks, and good vibes</p>
-                <p><strong>💕 Dress code:</strong> Comfy and cute!</p>
+                <p><strong>🎬 What:</strong> Out-on-the-towning! Including but not limited to: Dark Horse, Sundown Saloon, Press Play, etc.</p>
+                <p><strong>💕 Dress code:</strong> Cute! Hot! Whatever you're going for!</p>
             </div>
         </div>
     </div>
+
+    <!-- Sounds -->
+    <audio id="hoverSound" src="https://assets.mixkit.co/sfx/preview/mixkit-cartoon-voice-laugh-343.mp3"></audio>
+    <audio id="yesSound" src="https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3"></audio>
 
     <script>
         // Custom cursor functionality
@@ -163,31 +177,18 @@
         const yesBtn = document.getElementById('yesBtn');
         
         // Make no button dodge cursor
-        document.addEventListener('mousemove', (e) => {
-            const noBtnRect = noBtn.getBoundingClientRect();
-            const noBtnCenterX = noBtnRect.left + noBtnRect.width / 2;
-            const noBtnCenterY = noBtnRect.top + noBtnRect.height / 2;
-            
-            const distanceX = noBtnCenterX - e.clientX;
-            const distanceY = noBtnCenterY - e.clientY;
-            const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
-            
-            // If cursor gets within 100px, move the button away
-            if (distance < 100) {
-                const angle = Math.atan2(distanceY, distanceX);
-                const dodgeDistance = 80;
-                
-                let newX = noBtnCenterX + Math.cos(angle) * dodgeDistance;
-                let newY = noBtnCenterY + Math.sin(angle) * dodgeDistance;
-                
-                // Keep button within window bounds with padding
-                const margin = 100;
-                newX = Math.max(margin, Math.min(window.innerWidth - margin, newX));
-                newY = Math.max(margin, Math.min(window.innerHeight - margin, newY));
-                
-                noBtn.style.left = (newX - noBtnRect.width / 2) + 'px';
-                noBtn.style.top = (newY - noBtnRect.height / 2) + 'px';
-            }
+        noBtn.addEventListener("mouseenter", () => {
+            hoverSound.currentTime = 0;
+            hoverSound.play();
+
+            const cardRect = card.getBoundingClientRect();
+            const btnRect = noBtn.getBoundingClientRect();
+
+            const maxX = cardRect.width - btnRect.width - 10;
+            const maxY = cardRect.height - btnRect.height - 10;
+
+            noBtn.style.left = Math.random() * maxX + "px";
+            noBtn.style.top = Math.random() * maxY + "px";
         });
         
         function celebrate() {
