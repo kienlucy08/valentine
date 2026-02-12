@@ -24,11 +24,55 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(-45deg, #ff9a9e, #fad0c4, #fbc2eb, #a18cd1);
-      background-size: 400% 400%;
-      animation: bgMove 12s ease infinite;
+      background: #000;
       font-family: "Poppins", sans-serif;
       overflow: hidden;
+      position: relative;
+    }
+
+    .bg-slideshow {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+
+    .bg-slideshow img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      animation: slideshow 24s infinite;
+    }
+
+    .bg-slideshow img:nth-child(1) { animation-delay: 0s; }
+    .bg-slideshow img:nth-child(2) { animation-delay: 6s; }
+    .bg-slideshow img:nth-child(3) { animation-delay: 12s; }
+    .bg-slideshow img:nth-child(4) { animation-delay: 18s; }
+
+    @keyframes slideshow {
+      0% { opacity: 0; }
+      8% { opacity: 0.7; }
+      25% { opacity: 0.7; }
+      33% { opacity: 0; }
+      100% { opacity: 0; }
+    }
+
+    .bg-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(-45deg, rgba(255,154,158,0.4), rgba(250,208,196,0.4), rgba(251,194,235,0.4), rgba(161,140,209,0.4));
+      background-size: 400% 400%;
+      animation: bgMove 12s ease infinite;
+      z-index: 1;
     }
 
     @keyframes bgMove {
@@ -80,6 +124,7 @@
         inset 0 0 0 1px rgba(255,255,255,0.4);
       position: relative;
       animation: cardIn 1.1s ease;
+      z-index: 2;
     }
 
     @keyframes cardIn {
@@ -213,6 +258,53 @@
       margin-right: 6px;
     }
 
+    .action-buttons {
+      display: flex;
+      gap: 12px;
+      margin-top: 25px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .action-btn {
+      position: static;
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #ff4d6d, #ff758f);
+      color: white;
+      text-decoration: none;
+      border-radius: 25px;
+      font-size: 14px;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 8px 20px rgba(255,77,109,0.4);
+      transition: all 0.25s ease;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 25px rgba(255,77,109,0.6);
+    }
+
+    .action-btn.secondary {
+      background: linear-gradient(135deg, #a18cd1, #fbc2eb);
+      box-shadow: 0 8px 20px rgba(161,140,209,0.4);
+    }
+
+    .action-btn.secondary:hover {
+      box-shadow: 0 12px 25px rgba(161,140,209,0.6);
+    }
+
+    .action-btn.tertiary {
+      background: linear-gradient(135deg, #fad0c4, #ff9a9e);
+      box-shadow: 0 8px 20px rgba(250,208,196,0.4);
+    }
+
+    .action-btn.tertiary:hover {
+      box-shadow: 0 12px 25px rgba(250,208,196,0.6);
+    }
+
     /* Floating depth hearts */
     .heart {
       position: absolute;
@@ -246,6 +338,14 @@
 
 <body>
 
+  <div class="bg-slideshow">
+    <img src="https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=1200" alt="Friends celebrating">
+    <img src="https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?w=1200" alt="Galentines party">
+    <img src="https://images.unsplash.com/photo-1464983308776-8f5f1a48c6c0?w=1200" alt="Pink aesthetic">
+    <img src="https://images.unsplash.com/photo-1567427017947-545c5f8d16ad?w=1200" alt="Friends together">
+  </div>
+  <div class="bg-overlay"></div>
+
   <div class="custom-cursor">💖</div>
 
   <div class="card">
@@ -269,6 +369,17 @@
         <p><strong>📍 Where:</strong> My place!</p>
         <p><strong>🎬 What:</strong> Out-on-the-towning! Including but not limited to: Dark Horse, Sundown Saloon, Press Play, etc.</p>
         <p><strong>💕 Dress code:</strong> Cute! Hot! Whatever you're going for!</p>
+      </div>
+      <div class="action-buttons">
+        <button class="action-btn" onclick="addToCalendar()">
+          📅 Add to Calendar
+        </button>
+        <a href="https://open.spotify.com/playlist/37i9dQZF1DX0Uv9tZ47pWo?si=50b1df2285274b99" target="_blank" class="action-btn secondary">
+          🎵 Party Playlist
+        </a>
+        <a href="https://pin.it/1iZkjRSai" target="_blank" class="action-btn tertiary">
+          📌 Inspo Board
+        </a>
       </div>
     </div>
   </div>
@@ -362,6 +473,44 @@
     }
 
     setInterval(createHeart, 380);
+
+    // Add to Calendar function
+    function addToCalendar() {
+      const event = {
+        title: "Galentine's Party 💕",
+        description: "Out-on-the-towning! Dark Horse, Sundown Saloon, Press Play, etc. Dress code: Cute! Hot! Whatever you're going for!",
+        location: "TBD - My place!",
+        start: "2026-02-21T19:00:00",
+        end: "2026-02-21T23:00:00"
+      };
+
+      // Create ICS file content
+      const icsContent = `BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Galentine's Party//EN
+BEGIN:VEVENT
+UID:${Date.now()}@galentines.party
+DTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').split('.')[0]}Z
+DTSTART:${event.start.replace(/[-:]/g, '')}
+DTEND:${event.end.replace(/[-:]/g, '')}
+SUMMARY:${event.title}
+DESCRIPTION:${event.description}
+LOCATION:${event.location}
+STATUS:CONFIRMED
+END:VEVENT
+END:VCALENDAR`;
+
+      // Create download link
+      const blob = new Blob([icsContent], { type: 'text/calendar' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'galentines-party.ics';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
   </script>
 
 </body>
