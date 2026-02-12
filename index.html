@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Be My Valentine 💘</title>
+  <title>Be My Galentine 💘</title>
 
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
@@ -16,6 +16,7 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+      cursor: none !important;
     }
 
     body {
@@ -34,6 +35,36 @@
       0% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
+    }
+
+    /* Custom cursor */
+    .custom-cursor {
+      position: fixed;
+      width: 30px;
+      height: 30px;
+      pointer-events: none;
+      z-index: 10000;
+      transform: translate(-50%, -50%);
+      font-size: 30px;
+    }
+
+    .heart-trail {
+      position: fixed;
+      pointer-events: none;
+      font-size: 20px;
+      animation: float-trail 2s ease-out forwards;
+      z-index: 9999;
+    }
+
+    @keyframes float-trail {
+      0% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-100px) scale(0.5);
+      }
     }
 
     /* Card */
@@ -101,7 +132,7 @@
       border: none;
       font-size: 16px;
       font-weight: 500;
-      cursor: pointer;
+      cursor: none;
       transition: all 0.25s ease;
       box-shadow: 0 10px 25px rgba(0,0,0,0.15);
     }
@@ -133,6 +164,53 @@
       font-size: 13px;
       color: #6b6b6b;
       font-style: italic;
+    }
+
+    /* Success message */
+    .success-card {
+      display: none;
+      text-align: center;
+      animation: cardIn 0.6s ease;
+    }
+
+    .success-card.show {
+      display: block;
+    }
+
+    .success-emoji {
+      font-size: 80px;
+      margin-bottom: 20px;
+    }
+
+    .success-title {
+      font-family: "Playfair Display", serif;
+      font-size: 32px;
+      color: #ff4d6d;
+      margin-bottom: 25px;
+    }
+
+    .event-details {
+      text-align: left;
+      background: rgba(255, 255, 255, 0.5);
+      padding: 20px;
+      border-radius: 16px;
+      margin-top: 20px;
+    }
+
+    .event-details p {
+      margin-bottom: 14px;
+      font-size: 15px;
+      color: #4a1c2f;
+      line-height: 1.6;
+    }
+
+    .event-details p:last-child {
+      margin-bottom: 0;
+    }
+
+    .event-details strong {
+      font-weight: 600;
+      margin-right: 6px;
     }
 
     /* Floating depth hearts */
@@ -168,16 +246,31 @@
 
 <body>
 
-  <div class="card">
-    <div class="emoji">🐱❤️</div>
-    <h2>Aditi,<br>will you be my Valentine?</h2>
+  <div class="custom-cursor">💖</div>
 
-    <div class="buttons">
-      <button id="yes">Yes 💖</button>
-      <button id="no">No 🙈</button>
+  <div class="card">
+    <div class="initial-content">
+      <div class="emoji">🐱❤️</div>
+      <h2>Will you be my Galentine?</h2>
+
+      <div class="buttons">
+        <button id="yes">Yes 💖</button>
+        <button id="no">No 🙈</button>
+      </div>
+
+      <div class="hint">Some love stories don't allow "no" ✨</div>
     </div>
 
-    <div class="hint">Some love stories don’t allow “no” ✨</div>
+    <div class="success-card">
+      <div class="success-emoji">🎉💕🎊</div>
+      <div class="success-title">Yay! ❤️</div>
+      <div class="event-details">
+        <p><strong>📅 When:</strong> Friday, February 21st at 7:00 PM</p>
+        <p><strong>📍 Where:</strong> My place!</p>
+        <p><strong>🎬 What:</strong> Out-on-the-towning! Including but not limited to: Dark Horse, Sundown Saloon, Press Play, etc.</p>
+        <p><strong>💕 Dress code:</strong> Cute! Hot! Whatever you're going for!</p>
+      </div>
+    </div>
   </div>
 
   <!-- Sounds -->
@@ -190,6 +283,33 @@
     const card = document.querySelector(".card");
     const hoverSound = document.getElementById("hoverSound");
     const yesSound = document.getElementById("yesSound");
+    const cursor = document.querySelector('.custom-cursor');
+
+    // Custom cursor tracking
+    let mouseX = 0, mouseY = 0;
+    
+    document.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      cursor.style.left = mouseX + 'px';
+      cursor.style.top = mouseY + 'px';
+      
+      // Create trailing hearts randomly
+      if (Math.random() > 0.8) {
+        createHeartTrail(mouseX, mouseY);
+      }
+    });
+    
+    function createHeartTrail(x, y) {
+      const heart = document.createElement('div');
+      heart.className = 'heart-trail';
+      heart.textContent = '💕';
+      heart.style.left = x + 'px';
+      heart.style.top = y + 'px';
+      document.body.appendChild(heart);
+      
+      setTimeout(() => heart.remove(), 2000);
+    }
 
     noBtn.addEventListener("mouseenter", () => {
       hoverSound.currentTime = 0;
@@ -214,9 +334,18 @@
         origin: { y: 0.65 }
       });
 
-      setTimeout(() => {
-        alert("YAY 💕 I can’t wait for Valentine’s Day with you!");
-      }, 500);
+      // Show success message
+      document.querySelector('.initial-content').style.display = 'none';
+      document.querySelector('.success-card').classList.add('show');
+
+      // Extra celebration hearts
+      for (let i = 0; i < 50; i++) {
+        setTimeout(() => {
+          const x = Math.random() * window.innerWidth;
+          const y = Math.random() * window.innerHeight;
+          createHeartTrail(x, y);
+        }, i * 50);
+      }
     });
 
     function createHeart() {
